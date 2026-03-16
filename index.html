@@ -651,6 +651,11 @@
       </div>
     </div>
 
+    <label class="opt-in" style="display:flex;align-items:flex-start;gap:0.5rem;margin-top:1.5rem;font-size:0.82rem;color:#717178;cursor:pointer;">
+      <input type="checkbox" id="optIn" style="margin-top:3px;accent-color:#EC6861;cursor:pointer;" />
+      <span>I agree to receive marketing communications from Hurrdat. You can unsubscribe at any time.</span>
+    </label>
+
     <div class="cf-turnstile" data-sitekey="0x4AAAAAACr0e3GnUXCQWb8P" data-theme="light" style="display:flex;justify-content:center;margin-top:1.5rem;"></div>
 
     <button class="generate-btn" onclick="generateBracket()">Generate My Bracket</button>
@@ -961,6 +966,8 @@ function generateBracket() {
     return;
   }
 
+  const optIn = document.getElementById('optIn').checked;
+
   // Verify Turnstile
   const turnstileToken = document.querySelector('[name="cf-turnstile-response"]')?.value;
   if (!turnstileToken) {
@@ -1017,6 +1024,7 @@ function generateBracket() {
         biggestBudgetSlice: answerText[6],
         boldestBelief: answerText[7],
         persona: persona.title,
+        optIn: optIn,
         cfToken: turnstileToken
       })
     }).catch(() => {}); // silently ignore errors
