@@ -1,0 +1,1346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>2026 March Madness Bracket Generator | Hurrdat Marketing</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --coral: #EC6861;
+      --orange: #F47933;
+      --dark: #464142;
+      --darker: #ffffff;
+      --card: #f7f7f8;
+      --card-border: #e0e0e4;
+      --text: #333333;
+      --text-muted: #717178;
+      --blue: #2EA3F2;
+      --gradient: linear-gradient(135deg, var(--coral), var(--orange));
+      --gradient-blue: linear-gradient(135deg, var(--orange), var(--blue));
+    }
+
+    body {
+      font-family: 'Open Sans', sans-serif;
+      background: var(--darker);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* --- HEADER --- */
+    .hero {
+      text-align: center;
+      padding: 3rem 1rem 2rem;
+      background: linear-gradient(180deg, rgba(236,104,97,0.08) 0%, transparent 100%);
+    }
+    .hero-logo {
+      height: 36px;
+      margin-bottom: 1rem;
+      opacity: 1;
+    }
+    .hero h1 {
+      font-size: clamp(2rem, 5vw, 3.2rem);
+      font-weight: 800;
+      background: var(--gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      line-height: 1.1;
+      margin-bottom: 0.5rem;
+    }
+    .hero h1 .sparkle { -webkit-text-fill-color: var(--orange); }
+    .hero p {
+      color: var(--text-muted);
+      font-size: 1.05rem;
+      max-width: 520px;
+      margin: 0 auto;
+    }
+
+    /* --- FORM CARD --- */
+    .form-section {
+      max-width: 720px;
+      margin: 0 auto 3rem;
+      padding: 0 1rem;
+    }
+    .form-card {
+      background: var(--card);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 2.5rem 2rem;
+    }
+    .form-card h2 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 0.25rem;
+    }
+    .form-card .subtitle {
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.92rem;
+      margin-bottom: 2rem;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.25rem;
+    }
+    @media (max-width: 600px) {
+      .form-grid { grid-template-columns: 1fr; }
+    }
+    .form-group { display: flex; flex-direction: column; gap: 0.4rem; }
+    .form-group.full-width { grid-column: 1 / -1; }
+    .form-group label {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .form-group label .icon { font-size: 1rem; }
+    .form-group input,
+    .form-group select {
+      background: var(--darker);
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      padding: 0.7rem 0.9rem;
+      color: var(--text);
+      font-family: inherit;
+      font-size: 0.95rem;
+      outline: none;
+      transition: border-color 0.2s;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+    .form-group select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23717178' viewBox='0 0 16 16'%3E%3Cpath d='M1.5 5.5l6.5 6 6.5-6'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 0.9rem center;
+      padding-right: 2.2rem;
+    }
+    .form-group input:focus,
+    .form-group select:focus {
+      border-color: var(--coral);
+    }
+    .form-group input::placeholder { color: var(--text-muted); }
+
+    /* --- GENERATE BUTTON --- */
+    .generate-btn {
+      display: block;
+      width: 100%;
+      margin-top: 2rem;
+      padding: 1rem;
+      background: var(--gradient);
+      border: none;
+      border-radius: 12px;
+      color: #fff;
+      font-family: inherit;
+      font-size: 1.1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.15s;
+    }
+    .generate-btn:hover { opacity: 0.92; transform: translateY(-1px); }
+    .generate-btn:active { transform: translateY(0); }
+
+    /* --- LOADING --- */
+    .loading-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(255,255,255,0.92);
+      z-index: 100;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 1.5rem;
+    }
+    .loading-overlay.active { display: flex; }
+    .spinner {
+      width: 56px; height: 56px;
+      border: 4px solid var(--card-border);
+      border-top-color: var(--coral);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loading-overlay p { font-size: 1.1rem; color: var(--text-muted); }
+
+    /* --- RESULTS --- */
+    .results-section {
+      display: none;
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 1rem 3rem;
+    }
+    .results-section.active { display: block; }
+
+    .results-header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    .results-header h2 {
+      font-size: 1.8rem;
+      font-weight: 800;
+      background: var(--gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .results-header .persona-name {
+      font-size: 1.1rem;
+      color: var(--text-muted);
+      margin-top: 0.25rem;
+    }
+    .results-header .persona-desc {
+      font-size: 0.92rem;
+      color: var(--text-muted);
+      max-width: 600px;
+      margin: 0.5rem auto 0;
+      line-height: 1.5;
+    }
+
+    /* --- BRACKET --- */
+    .bracket-container {
+      overflow-x: auto;
+      padding-bottom: 1rem;
+    }
+
+    .region-tabs {
+      display: flex;
+      justify-content: center;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+    }
+    .region-tab {
+      padding: 0.5rem 1.2rem;
+      background: var(--card);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      color: var(--text-muted);
+      font-family: inherit;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .region-tab.active {
+      background: var(--gradient);
+      color: #fff;
+      border-color: transparent;
+    }
+    .region-tab:hover:not(.active) { border-color: var(--coral); color: var(--text); }
+
+    .bracket-region {
+      display: none;
+    }
+    .bracket-region.active { display: block; }
+
+    .bracket-grid {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(140px, 1fr));
+      gap: 0;
+      min-width: 980px;
+      position: relative;
+    }
+
+    .round-col {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-around;
+      padding: 0.5rem 0.25rem;
+    }
+    .round-col .round-label {
+      text-align: center;
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 0.5rem;
+      letter-spacing: 0.05em;
+    }
+
+    .matchup {
+      margin: 0.25rem 0;
+    }
+    .matchup .team {
+      display: flex;
+      align-items: center;
+      padding: 0.3rem 0.5rem;
+      font-size: 0.72rem;
+      background: var(--darker);
+      border: 1px solid var(--card-border);
+      border-radius: 4px;
+      margin-bottom: 1px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      transition: all 0.2s;
+    }
+    .matchup .team.winner {
+      background: rgba(236,104,97,0.1);
+      border-color: var(--coral);
+      color: var(--coral);
+      font-weight: 600;
+    }
+    .matchup .team .seed {
+      font-weight: 700;
+      color: var(--orange);
+      margin-right: 0.35rem;
+      min-width: 1.2rem;
+      font-size: 0.68rem;
+    }
+    .matchup .team.winner .seed { color: var(--coral); }
+
+    /* --- FINAL FOUR DISPLAY --- */
+    .final-four-section {
+      display: none;
+      margin-top: 1.5rem;
+    }
+    .final-four-section.active { display: block; }
+
+    .final-four-card {
+      background: var(--card);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 2rem;
+      text-align: center;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    .final-four-card h3 {
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin-bottom: 1.5rem;
+      background: var(--gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .ff-bracket {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .ff-game {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+    .ff-team {
+      padding: 0.6rem 1.2rem;
+      background: var(--darker);
+      border: 1px solid var(--card-border);
+      border-radius: 6px;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+    .ff-team.winner {
+      background: rgba(236,104,97,0.1);
+      border-color: var(--coral);
+      color: var(--coral);
+    }
+    .ff-team .seed { color: var(--orange); margin-right: 0.4rem; }
+    .ff-arrow { font-size: 1.5rem; color: var(--text-muted); }
+    .champion-box {
+      margin-top: 1.5rem;
+      padding: 1rem 2rem;
+      background: var(--gradient);
+      border-radius: 12px;
+      display: inline-block;
+    }
+    .champion-box .label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      opacity: 0.8;
+    }
+    .champion-box .champ-name {
+      font-size: 1.4rem;
+      font-weight: 800;
+    }
+
+    /* --- COMPANY MATCH --- */
+    .company-match-card {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      max-width: 640px;
+      margin: 0 auto 2rem;
+      padding: 1.25rem 1.5rem;
+      background: var(--card);
+      border: 2px solid var(--coral);
+      border-radius: 14px;
+    }
+    @media (max-width: 500px) {
+      .company-match-card { flex-direction: column; text-align: center; }
+    }
+    .company-match-badge {
+      flex-shrink: 0;
+      width: 56px;
+      height: 56px;
+      border-radius: 12px;
+      background: var(--gradient);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.6rem;
+      color: #fff;
+    }
+    .company-match-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--coral);
+      margin-bottom: 0.15rem;
+    }
+    .company-match-name {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--text);
+      margin-bottom: 0.3rem;
+    }
+    .company-match-desc {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      line-height: 1.45;
+    }
+
+    /* --- SHARE / ACTIONS --- */
+    .actions-row {
+      display: flex;
+      justify-content: center;
+      gap: 0.75rem;
+      margin-top: 2rem;
+      flex-wrap: wrap;
+    }
+    .action-btn {
+      padding: 0.65rem 1.5rem;
+      border-radius: 10px;
+      font-family: inherit;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: none;
+    }
+    .action-btn.primary {
+      background: var(--gradient);
+      color: #fff;
+    }
+    .action-btn.secondary {
+      background: var(--card);
+      border: 1px solid var(--card-border);
+      color: var(--text);
+    }
+    .action-btn:hover { opacity: 0.88; transform: translateY(-1px); }
+
+    /* --- FOOTER --- */
+    .footer {
+      text-align: center;
+      padding: 2rem 1rem;
+      color: var(--text-muted);
+      font-size: 0.78rem;
+      border-top: 1px solid var(--card-border);
+    }
+    .footer a { color: var(--coral); text-decoration: none; }
+    .footer a:hover { text-decoration: underline; }
+
+    /* --- SCROLL --- */
+    ::-webkit-scrollbar { height: 6px; width: 6px; }
+    ::-webkit-scrollbar-track { background: #f0f0f0; }
+    ::-webkit-scrollbar-thumb { background: #ccc; border-radius: 3px; }
+  </style>
+</head>
+<body>
+
+<!-- HERO -->
+<header class="hero">
+  <img src="https://hurrdatmarketing.com/wp-content/uploads/2025/05/hurrdat-marketing-logo.svg" alt="Hurrdat Marketing" class="hero-logo" />
+  <h1><span class="sparkle">&#10024;</span> 2026 Persona Bracket <span class="sparkle">&#10024;</span></h1>
+  <p>Your marketing instincts predict March Madness. No sports knowledge required.</p>
+</header>
+
+<!-- FORM -->
+<section class="form-section" id="formSection">
+  <div class="form-card">
+    <h2>Build Your Bracket Persona</h2>
+    <p class="subtitle">Your marketing profile will predict the entire 2026 tournament</p>
+
+    <div class="form-grid">
+      <!-- Name -->
+      <div class="form-group">
+        <label><span class="icon">&#128100;</span> First Name</label>
+        <input type="text" id="firstName" placeholder="Jane" />
+      </div>
+      <div class="form-group">
+        <label><span class="icon">&#128100;</span> Last Name</label>
+        <input type="text" id="lastName" placeholder="Marketer" />
+      </div>
+
+      <!-- Q1: Marketing Superpower -->
+      <div class="form-group">
+        <label><span class="icon">&#127919;</span> Marketing Superpower</label>
+        <select id="q1">
+          <option value="0">SEO &amp; Organic Growth</option>
+          <option value="0">Data-Driven Content Strategy</option>
+          <option value="1">Video Production &amp; Storytelling</option>
+          <option value="1">Podcast &amp; Audio Content</option>
+          <option value="2">Media Relations &amp; Reputation</option>
+          <option value="2">Crisis Communications</option>
+          <option value="3">Billboard &amp; Print Campaigns</option>
+          <option value="3">Local Market Domination</option>
+        </select>
+      </div>
+
+      <!-- Q2: Go-To KPI -->
+      <div class="form-group">
+        <label><span class="icon">&#128200;</span> Go-To KPI</label>
+        <select id="q2">
+          <option value="0">Organic Traffic &amp; Rankings</option>
+          <option value="0">Conversion Rate &amp; Leads</option>
+          <option value="1">Views, Engagement &amp; Watch Time</option>
+          <option value="1">Subscriber &amp; Follower Growth</option>
+          <option value="2">Share of Voice &amp; Media Mentions</option>
+          <option value="2">Brand Sentiment &amp; Trust Score</option>
+          <option value="3">Impressions &amp; Local Reach</option>
+          <option value="3">Foot Traffic &amp; In-Store Visits</option>
+        </select>
+      </div>
+
+      <!-- Q3: Content Format -->
+      <div class="form-group">
+        <label><span class="icon">&#128221;</span> Winning Content Format</label>
+        <select id="q3">
+          <option value="0">Long-form SEO Blog Posts</option>
+          <option value="0">Interactive Tools &amp; Calculators</option>
+          <option value="1">Brand Films &amp; Mini-Docs</option>
+          <option value="1">Live Streaming &amp; Event Coverage</option>
+          <option value="2">Press Releases &amp; Op-Eds</option>
+          <option value="2">Executive Thought Leadership</option>
+          <option value="3">Out-of-Home &amp; Print Creative</option>
+          <option value="3">Direct Mail &amp; Experiential</option>
+        </select>
+      </div>
+
+      <!-- Q4: Platform -->
+      <div class="form-group">
+        <label><span class="icon">&#128241;</span> Platform You'd Invest In First</label>
+        <select id="q4">
+          <option value="0">Google Search</option>
+          <option value="0">Email &amp; Marketing Automation</option>
+          <option value="1">YouTube &amp; Streaming Platforms</option>
+          <option value="1">Instagram &amp; TikTok</option>
+          <option value="2">Earned Media &amp; News Outlets</option>
+          <option value="2">LinkedIn &amp; Industry Publications</option>
+          <option value="3">Billboards, Transit &amp; Radio</option>
+          <option value="3">Event Sponsorships &amp; Signage</option>
+        </select>
+      </div>
+
+      <!-- Q5: Client Problem -->
+      <div class="form-group">
+        <label><span class="icon">&#128161;</span> Client Problem That Fires You Up</label>
+        <select id="q5">
+          <option value="0">"We don't rank for anything"</option>
+          <option value="0">"Our website doesn't convert"</option>
+          <option value="1">"Our content doesn't connect"</option>
+          <option value="1">"We can't keep up with social"</option>
+          <option value="2">"Nobody's covering our story"</option>
+          <option value="2">"We need to manage a crisis"</option>
+          <option value="3">"We need to own our local market"</option>
+          <option value="3">"Our competitors are more visible"</option>
+        </select>
+      </div>
+
+      <!-- Q6: AI Stance -->
+      <div class="form-group">
+        <label><span class="icon">&#129302;</span> How You'd Use AI</label>
+        <select id="q6">
+          <option value="0">Content optimization at scale</option>
+          <option value="0">Technical SEO &amp; site auditing</option>
+          <option value="1">AI-assisted video &amp; audio editing</option>
+          <option value="1">Generative creative &amp; thumbnails</option>
+          <option value="2">Media monitoring &amp; sentiment analysis</option>
+          <option value="2">Journalist targeting &amp; outreach</option>
+          <option value="3">Data-driven media buying &amp; placement</option>
+          <option value="3">Audience location intelligence</option>
+        </select>
+      </div>
+
+      <!-- Q7: Budget Allocation -->
+      <div class="form-group">
+        <label><span class="icon">&#128176;</span> Where the Biggest Budget Slice Goes</label>
+        <select id="q7">
+          <option value="0">SEO &amp; Content Marketing</option>
+          <option value="0">Paid Search &amp; Performance</option>
+          <option value="1">Video Production &amp; Streaming</option>
+          <option value="1">Social Media &amp; Influencers</option>
+          <option value="2">PR &amp; Crisis Communications</option>
+          <option value="2">Reputation Management</option>
+          <option value="3">OOH, Print &amp; Traditional Media</option>
+          <option value="3">Radio, TV &amp; Sponsorships</option>
+        </select>
+      </div>
+
+      <!-- Q8: Boldest Belief (Upset Factor) -->
+      <div class="form-group full-width">
+        <label><span class="icon">&#128165;</span> Boldest Marketing Belief (Your Upset Factor)</label>
+        <select id="q8">
+          <option value="0">Organic always beats paid long-term</option>
+          <option value="0">First-party data is the ultimate edge</option>
+          <option value="1">Great stories beat great strategies</option>
+          <option value="1">Short-form video will dominate everything</option>
+          <option value="2">Earned media is more credible than any ad</option>
+          <option value="2">Reputation is a company's most valuable asset</option>
+          <option value="3">Nothing beats real-world brand presence</option>
+          <option value="3">Digital is oversaturated &mdash; go physical</option>
+        </select>
+      </div>
+    </div>
+
+    <button class="generate-btn" onclick="generateBracket()">Generate My Bracket</button>
+  </div>
+</section>
+
+<!-- LOADING -->
+<div class="loading-overlay" id="loading">
+  <div class="spinner"></div>
+  <p>Analyzing your marketing persona...</p>
+</div>
+
+<!-- RESULTS -->
+<section class="results-section" id="resultsSection">
+  <div class="results-header">
+    <h2 id="personaTitle"></h2>
+    <p class="persona-name" id="personaSubtitle"></p>
+    <p class="persona-desc" id="personaDesc"></p>
+  </div>
+
+  <div class="company-match-card" id="companyMatchCard">
+    <div class="company-match-badge" id="companyBadge"></div>
+    <div class="company-match-body">
+      <div class="company-match-label">Your Professional Match</div>
+      <div class="company-match-name" id="companyName"></div>
+      <p class="company-match-desc" id="companyDesc"></p>
+    </div>
+  </div>
+
+  <div class="region-tabs" id="regionTabs"></div>
+
+  <div id="bracketRegions"></div>
+
+  <div class="final-four-section active" id="finalFourSection">
+    <div class="final-four-card">
+      <h3>&#127942; Final Four &amp; National Championship</h3>
+      <div class="ff-bracket" id="ffBracket"></div>
+      <div class="champion-box" id="championBox" style="display:none">
+        <div class="label">National Champion</div>
+        <div class="champ-name" id="champName"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="actions-row">
+    <button class="action-btn primary" onclick="startOver()">&#x21bb; Start Over</button>
+    <button class="action-btn secondary" onclick="copyResults()">&#128203; Copy My Picks</button>
+  </div>
+</section>
+
+<footer class="footer">
+  Built by <a href="https://hurrdatmarketing.com" target="_blank" rel="noopener">Hurrdat Marketing</a> &middot; 2026 March Madness Persona Bracket Generator
+</footer>
+
+<script>
+// ===== BRACKET DATA =====
+const BRACKET = {
+  EAST: [
+    { seed: 1, name: "Duke", record: "32-2" },
+    { seed: 16, name: "Siena", record: "23-11" },
+    { seed: 8, name: "Ohio St.", record: "21-12" },
+    { seed: 9, name: "TCU", record: "22-11" },
+    { seed: 5, name: "St. John's", record: "28-6" },
+    { seed: 12, name: "Northern Iowa", record: "23-12" },
+    { seed: 4, name: "Kansas", record: "23-10" },
+    { seed: 13, name: "Cal Baptist", record: "25-8" },
+    { seed: 6, name: "Louisville", record: "23-10" },
+    { seed: 11, name: "South Florida", record: "25-8" },
+    { seed: 3, name: "Michigan St.", record: "25-7" },
+    { seed: 14, name: "North Dakota St.", record: "27-7" },
+    { seed: 7, name: "UCLA", record: "23-11" },
+    { seed: 10, name: "UCF", record: "21-11" },
+    { seed: 2, name: "UConn", record: "29-5" },
+    { seed: 15, name: "Furman", record: "22-12" }
+  ],
+  WEST: [
+    { seed: 1, name: "Arizona", record: "32-2" },
+    { seed: 16, name: "Long Island", record: "24-10" },
+    { seed: 8, name: "Villanova", record: "24-8" },
+    { seed: 9, name: "Utah St.", record: "28-6" },
+    { seed: 5, name: "Wisconsin", record: "24-10" },
+    { seed: 12, name: "High Point", record: "30-4" },
+    { seed: 4, name: "Arkansas", record: "26-8" },
+    { seed: 13, name: "Hawaii", record: "24-8" },
+    { seed: 6, name: "BYU", record: "23-11" },
+    { seed: 11, name: null, firstFour: "WEST_11" },
+    { seed: 3, name: "Gonzaga", record: "30-3" },
+    { seed: 14, name: "Kennesaw St.", record: "21-13" },
+    { seed: 7, name: "Miami (FL)", record: "25-8" },
+    { seed: 10, name: "Missouri", record: "20-12" },
+    { seed: 2, name: "Purdue", record: "27-8" },
+    { seed: 15, name: "Queens (NC)", record: "21-13" }
+  ],
+  SOUTH: [
+    { seed: 1, name: "Florida", record: "26-7" },
+    { seed: 16, name: null, firstFour: "SOUTH_16" },
+    { seed: 8, name: "Clemson", record: "24-10" },
+    { seed: 9, name: "Iowa", record: "21-12" },
+    { seed: 5, name: "Vanderbilt", record: "26-8" },
+    { seed: 12, name: "McNeese", record: "28-5" },
+    { seed: 4, name: "Nebraska", record: "26-6" },
+    { seed: 13, name: "Troy", record: "22-11" },
+    { seed: 6, name: "North Carolina", record: "24-8" },
+    { seed: 11, name: "VCU", record: "27-7" },
+    { seed: 3, name: "Illinois", record: "24-8" },
+    { seed: 14, name: "Penn", record: "18-11" },
+    { seed: 7, name: "Saint Mary's", record: "27-5" },
+    { seed: 10, name: "Texas A&M", record: "21-11" },
+    { seed: 2, name: "Houston", record: "28-6" },
+    { seed: 15, name: "Idaho", record: "21-14" }
+  ],
+  MIDWEST: [
+    { seed: 1, name: "Michigan", record: "31-3" },
+    { seed: 16, name: null, firstFour: "MIDWEST_16" },
+    { seed: 8, name: "Georgia", record: "22-10" },
+    { seed: 9, name: "Saint Louis", record: "28-5" },
+    { seed: 5, name: "Texas Tech", record: "22-10" },
+    { seed: 12, name: "Akron", record: "29-5" },
+    { seed: 4, name: "Alabama", record: "23-9" },
+    { seed: 13, name: "Hofstra", record: "24-10" },
+    { seed: 6, name: "Tennessee", record: "22-11" },
+    { seed: 11, name: null, firstFour: "MIDWEST_11" },
+    { seed: 3, name: "Virginia", record: "29-5" },
+    { seed: 14, name: "Wright St.", record: "23-11" },
+    { seed: 7, name: "Kentucky", record: "21-13" },
+    { seed: 10, name: "Santa Clara", record: "26-8" },
+    { seed: 2, name: "Iowa St.", record: "27-7" },
+    { seed: 15, name: "Tennessee St.", record: "23-9" }
+  ]
+};
+
+// First Four matchups — winners get slotted into the bracket
+const FIRST_FOUR = {
+  SOUTH_16: [
+    { seed: 16, name: "Lehigh", record: "18-16" },
+    { seed: 16, name: "Prairie View A&M", record: "18-17" }
+  ],
+  MIDWEST_16: [
+    { seed: 16, name: "UMBC", record: "24-8" },
+    { seed: 16, name: "Howard", record: "23-10" }
+  ],
+  WEST_11: [
+    { seed: 11, name: "NC State", record: "20-13" },
+    { seed: 11, name: "Texas", record: "18-14" }
+  ],
+  MIDWEST_11: [
+    { seed: 11, name: "SMU", record: "20-13" },
+    { seed: 11, name: "Miami (Ohio)", record: "31-1" }
+  ]
+};
+
+const ROUND_NAMES = ["First Round", "Round of 32", "Sweet 16", "Elite Eight", "Regional Champ"];
+
+// Company tracks: 0 = Hurrdat Marketing, 1 = Hurrdat Media, 2 = Lukas Partners, 3 = Canary & Coal
+const COMPANIES = [
+  {
+    name: "Hurrdat Marketing",
+    badge: "\uD83D\uDD0D",
+    tagline: "Digital Marketing & SEO",
+    desc: "You live and breathe search rankings, site traffic, and content strategy. You know that being found online is the foundation of modern business\u2014and you have the patience and data chops to build lasting organic growth.",
+    url: "https://hurrdatmarketing.com"
+  },
+  {
+    name: "Hurrdat Media / Hurrdat Sports / HurrdatONE",
+    badge: "\uD83C\uDFAC",
+    tagline: "Media Production & Digital Storytelling",
+    desc: "You think in stories, frames, and soundbites. Whether it's a brand film, podcast, or live sports broadcast, you know that compelling content is what makes people stop scrolling and start feeling.",
+    url: "https://hurrdatmedia.com"
+  },
+  {
+    name: "Lukas Partners",
+    badge: "\uD83D\uDCE3",
+    tagline: "PR & Communications",
+    desc: "You understand that credibility can't be bought\u2014it's earned. You build reputations through strategic media relations, crisis management, and thought leadership that puts your clients in the headlines.",
+    url: "https://lukaspartners.com"
+  },
+  {
+    name: "Canary & Coal",
+    badge: "\uD83D\uDDBC\uFE0F",
+    tagline: "OOH & Traditional Advertising",
+    desc: "You believe in the power of real-world presence. Billboards, transit wraps, print, and radio\u2014you know that dominating a local market means showing up where people actually live, work, and drive.",
+    url: "https://canaryandcoal.com"
+  }
+];
+
+// Persona archetypes (one per company track)
+const PERSONAS = [
+  { title: "The SEO Strategist", track: 0, desc: "You play the long game. Just like organic rankings, your bracket favors consistency, authority, and teams that have built momentum over time. You trust the process and let the data guide you." },
+  { title: "The Storyteller", track: 1, desc: "You think in narratives. Your bracket is full of cinematic moments\u2014underdog runs, revenge games, and teams with stories that deserve a documentary. Content is king, and your picks prove it." },
+  { title: "The Reputation Builder", track: 2, desc: "You know that perception is reality. Storied programs with strong reputations get an edge in your bracket because you understand that credibility creates its own momentum." },
+  { title: "The Market Dominator", track: 3, desc: "You believe in owning your territory. Your bracket favors teams that dominate their conference and region\u2014because in March, just like in local advertising, presence wins." }
+];
+
+// ===== ALGORITHM DATA (from hurrdat_bracket_algorithm.xlsx) =====
+
+// First-round matchup data keyed by higher seed team name
+// chalkPct = % higher seed wins, upsetScore = 1-10 risk rating
+const R1_MATCHUPS = {
+  // EAST
+  "Duke":           { upsetScore: 1, chalkPct: 99, injury: false },
+  "Ohio St.":       { upsetScore: 5, chalkPct: 52, injury: false },
+  "St. John's":     { upsetScore: 3, chalkPct: 85, injury: false },
+  "Kansas":         { upsetScore: 1, chalkPct: 97, injury: false },
+  "Louisville":     { upsetScore: 6, chalkPct: 65, injury: false },
+  "Michigan St.":   { upsetScore: 2, chalkPct: 95, injury: false },
+  "UCLA":           { upsetScore: 4, chalkPct: 72, injury: false },
+  "UConn":          { upsetScore: 1, chalkPct: 99, injury: false },
+  // WEST
+  "Arizona":        { upsetScore: 1, chalkPct: 99, injury: false },
+  "Villanova":      { upsetScore: 5, chalkPct: 50, injury: false },
+  "Wisconsin":      { upsetScore: 6, chalkPct: 68, injury: false },
+  "Arkansas":       { upsetScore: 2, chalkPct: 94, injury: false },
+  "BYU":            { upsetScore: 6, chalkPct: 63, injury: true, injuryOnFav: true },
+  "Gonzaga":        { upsetScore: 2, chalkPct: 96, injury: false },
+  "Miami (FL)":     { upsetScore: 5, chalkPct: 65, injury: false },
+  "Purdue":         { upsetScore: 1, chalkPct: 99, injury: false },
+  // SOUTH
+  "Florida":        { upsetScore: 1, chalkPct: 99, injury: false },
+  "Clemson":        { upsetScore: 6, chalkPct: 48, injury: true, injuryOnFav: true },
+  "Vanderbilt":     { upsetScore: 6, chalkPct: 68, injury: false },
+  "Nebraska":       { upsetScore: 2, chalkPct: 93, injury: false },
+  "North Carolina": { upsetScore: 7, chalkPct: 53, injury: true, injuryOnFav: true },
+  "Illinois":       { upsetScore: 2, chalkPct: 96, injury: false },
+  "Saint Mary's":   { upsetScore: 6, chalkPct: 58, injury: false },
+  "Houston":        { upsetScore: 1, chalkPct: 99, injury: false },
+  // MIDWEST
+  "Michigan":       { upsetScore: 1, chalkPct: 99, injury: true, injuryOnFav: true },
+  "Georgia":        { upsetScore: 5, chalkPct: 56, injury: false },
+  "Texas Tech":     { upsetScore: 8, chalkPct: 55, injury: true, injuryOnFav: true },
+  "Alabama":        { upsetScore: 3, chalkPct: 92, injury: false },
+  "Tennessee":      { upsetScore: 5, chalkPct: 67, injury: false },
+  "Virginia":       { upsetScore: 2, chalkPct: 96, injury: false },
+  "Kentucky":       { upsetScore: 6, chalkPct: 57, injury: false },
+  "Iowa St.":       { upsetScore: 1, chalkPct: 99, injury: false }
+};
+
+// Composite persona scores averaged from Algorithm Matrix Trait Profiles
+// Track 0: Hurrdat Marketing (Performance Analyst) — data-first, high chalk
+// Track 1: Hurrdat Media (Sports Storyteller) — narrative-driven, high upset
+// Track 2: Lukas Partners (Brand Strategist) — brand-loyal, very high chalk
+// Track 3: Canary & Coal (Market Instinct) — regional/name bias, moderate chalk
+const PERSONA_TRAITS = [
+  { chalk: 7.6, upset: 3.6, data: 9.4, brand: 4.2, narrative: 2.6, regional: 1.2, dominant: "data" },
+  { chalk: 4.0, upset: 7.4, data: 4.4, brand: 4.2, narrative: 8.0, regional: 4.2, dominant: "narrative" },
+  { chalk: 8.4, upset: 2.6, data: 4.6, brand: 8.8, narrative: 4.4, regional: 1.6, dominant: "brand" },
+  { chalk: 6.6, upset: 4.0, data: 2.4, brand: 7.4, narrative: 5.4, regional: 7.6, dominant: "regional" }
+];
+
+// ===== SEEDED RANDOM =====
+function hashCode(str) {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    hash = ((hash << 5) - hash) + str.charCodeAt(i);
+    hash |= 0;
+  }
+  return Math.abs(hash);
+}
+
+function seededRandom(seed) {
+  let s = seed;
+  return function() {
+    s = (s * 1664525 + 1013904223) & 0x7fffffff;
+    return s / 0x7fffffff;
+  };
+}
+
+// ===== BRACKET GENERATION =====
+function generateBracket() {
+  const firstName = document.getElementById('firstName').value.trim() || 'Fan';
+  const lastName = document.getElementById('lastName').value.trim() || '';
+  const answers = [];
+  for (let i = 1; i <= 8; i++) {
+    answers.push(parseInt(document.getElementById('q' + i).value));
+  }
+
+  // Build seed string from name + selected option indices (for max bracket variety)
+  const optionIndices = [];
+  for (let i = 1; i <= 8; i++) {
+    optionIndices.push(document.getElementById('q' + i).selectedIndex);
+  }
+  const seedStr = firstName + lastName + optionIndices.join('');
+  const seed = hashCode(seedStr);
+  const rng = seededRandom(seed);
+
+  // Determine company match by tallying track votes (values 0-3 map to 4 companies)
+  const trackCounts = [0, 0, 0, 0]; // Marketing, Media, PR, OOH
+  answers.forEach(a => { trackCounts[a]++; });
+  const maxTrack = trackCounts.indexOf(Math.max(...trackCounts));
+  const company = COMPANIES[maxTrack];
+  const persona = PERSONAS[maxTrack];
+
+  // Compute persona traits with user-specific boldness modifier
+  // Odd-indexed options within each dropdown represent the "bolder" choice
+  const baseTraits = PERSONA_TRAITS[maxTrack];
+  const boldCount = optionIndices.filter(idx => idx % 2 === 1).length;
+  const boldness = boldCount / 8; // 0 to 1
+  const traits = {
+    chalk: baseTraits.chalk - boldness * 1.5,
+    upset: baseTraits.upset + boldness * 1.5,
+    data: baseTraits.data,
+    brand: baseTraits.brand,
+    narrative: baseTraits.narrative,
+    regional: baseTraits.regional,
+    dominant: baseTraits.dominant
+  };
+
+  // Show loading
+  const loading = document.getElementById('loading');
+  loading.classList.add('active');
+
+  setTimeout(() => {
+    // Resolve First Four games
+    const firstFourResults = {};
+    for (const [key, matchup] of Object.entries(FIRST_FOUR)) {
+      const winner = pickWinner(matchup[0], matchup[1], rng, traits, false);
+      firstFourResults[key] = winner;
+    }
+
+    // Slot First Four winners into the bracket
+    const resolvedBracket = {};
+    for (const [regionName, teams] of Object.entries(BRACKET)) {
+      resolvedBracket[regionName] = teams.map(t => {
+        if (t.firstFour) {
+          return firstFourResults[t.firstFour];
+        }
+        return t;
+      });
+    }
+
+    // Generate each region
+    const regionResults = {};
+    const regionWinners = {};
+
+    for (const [regionName, teams] of Object.entries(resolvedBracket)) {
+      const rounds = simulateRegion(teams, rng, traits);
+      regionResults[regionName] = rounds;
+      regionWinners[regionName] = rounds[rounds.length - 1][0];
+    }
+
+    // Final Four
+    const ffSemis = [
+      { regions: ['EAST', 'SOUTH'] },
+      { regions: ['WEST', 'MIDWEST'] }
+    ];
+
+    const ffResults = [];
+    const ffWinners = [];
+    for (const semi of ffSemis) {
+      const t1 = regionWinners[semi.regions[0]];
+      const t2 = regionWinners[semi.regions[1]];
+      const winner = pickWinner(t1, t2, rng, traits, false);
+      ffResults.push({ team1: t1, team2: t2, winner });
+      ffWinners.push(winner);
+    }
+
+    // Championship
+    const champion = pickWinner(ffWinners[0], ffWinners[1], rng, traits, false);
+
+    // Render
+    loading.classList.remove('active');
+    document.getElementById('formSection').style.display = 'none';
+    const resultsSection = document.getElementById('resultsSection');
+    resultsSection.classList.add('active');
+
+    // Persona header
+    const personaLabel = persona.title.replace(/^The\s+/, '');
+    document.getElementById('personaTitle').textContent = `${firstName}'s ${personaLabel} Bracket`;
+    document.getElementById('personaSubtitle').textContent = persona.title;
+    document.getElementById('personaDesc').textContent = persona.desc;
+
+    // Company match
+    document.getElementById('companyBadge').textContent = company.badge;
+    document.getElementById('companyName').textContent = company.name;
+    document.getElementById('companyDesc').textContent = `${company.tagline} \u2014 ${company.desc}`;
+
+    // Region tabs
+    renderRegionTabs(regionResults, resolvedBracket, firstFourResults);
+
+    // Final Four
+    renderFinalFour(ffResults, champion);
+
+    // Smooth scroll
+    resultsSection.scrollIntoView({ behavior: 'smooth' });
+
+    // Store for copy
+    window._bracketData = { regionResults, ffResults, champion, firstName, lastName, persona, company };
+  }, 1500);
+}
+
+function simulateRegion(teams, rng, traits) {
+  const rounds = [];
+  let currentTeams = [...teams];
+
+  for (let round = 0; round < 4; round++) {
+    const nextTeams = [];
+    for (let i = 0; i < currentTeams.length; i += 2) {
+      const winner = pickWinner(currentTeams[i], currentTeams[i + 1], rng, traits, round === 0);
+      nextTeams.push(winner);
+    }
+    rounds.push(nextTeams);
+    currentTeams = nextTeams;
+  }
+
+  return rounds;
+}
+
+function pickWinner(team1, team2, rng, traits, isFirstRound) {
+  // Determine higher seed (lower number = better)
+  const higher = team1.seed <= team2.seed ? team1 : team2;
+  const lower = team1.seed <= team2.seed ? team2 : team1;
+
+  let prob; // probability higher seed wins
+
+  // First round: use algorithm matchup data from spreadsheet
+  const matchup = isFirstRound ? R1_MATCHUPS[higher.name] : null;
+
+  if (matchup) {
+    // Start with spreadsheet's chalk percentage
+    prob = matchup.chalkPct / 100;
+    const us = matchup.upsetScore;
+
+    // Algorithm rule: Chalk Composite >= 7 + low upset risk -> boost chalk pick
+    if (traits.chalk >= 7 && us < 5) {
+      prob += 0.05;
+    }
+
+    // Algorithm rule: Upset Composite >= 6 + high upset risk -> boost upset pick
+    if (traits.upset >= 6 && us >= 6) {
+      prob -= 0.15;
+    }
+
+    // Injury flag adjustments (App Integration Guide Step 4)
+    if (matchup.injury && matchup.injuryOnFav) {
+      if (us >= 5) {
+        prob -= 0.15; // +15% upset probability when favorite injured in risky game
+      } else {
+        prob -= 0.05; // +5% upset probability when favorite injured in safe game
+      }
+    }
+
+    // Dominant dimension tiebreaker for medium-risk games (score 5-6)
+    if (us >= 5 && us <= 6) {
+      if (traits.dominant === "data") {
+        // Data persona: win percentage differential matters
+        const wp1 = parseWinPct(higher.record);
+        const wp2 = parseWinPct(lower.record);
+        prob += (wp1 - wp2) * 0.12;
+      } else if (traits.dominant === "brand") {
+        // Brand persona: favor established/blue-blood programs
+        prob += 0.06;
+      } else if (traits.dominant === "narrative") {
+        // Narrative persona: favor the underdog story
+        prob -= 0.10;
+      } else if (traits.dominant === "regional") {
+        // Regional persona: slight familiarity boost
+        prob += 0.03;
+      }
+    }
+
+    // High upset risk (score >= 7): narrative personas get extra upset push
+    if (us >= 7 && traits.dominant === "narrative") {
+      prob -= 0.08;
+    }
+
+    // HIGH ALERT: Akron/TTU (score 8) — strongest upset signal in bracket
+    if (us >= 8 && traits.upset >= 5) {
+      prob -= 0.10;
+    }
+
+  } else {
+    // Later rounds: synthesize from seed difference + persona composite
+    const seedDiff = lower.seed - higher.seed;
+
+    if (seedDiff === 0) {
+      prob = 0.50;
+    } else {
+      prob = 0.50 + Math.min(seedDiff * 0.028, 0.45);
+    }
+
+    // Win percentage adjustment
+    const wp1 = parseWinPct(higher.record);
+    const wp2 = parseWinPct(lower.record);
+    prob += (wp1 - wp2) * 0.12;
+
+    // Persona influence on later rounds
+    prob += (traits.chalk - 5) * 0.008;
+
+    if (traits.upset >= 6) {
+      prob = prob + (0.5 - prob) * 0.12;
+    }
+
+    // Brand personas give extra edge to top seeds (blue bloods)
+    if (traits.dominant === "brand" && higher.seed <= 4) {
+      prob += 0.04;
+    }
+
+    // Regional persona slight boost
+    if (traits.dominant === "regional") {
+      prob += (traits.regional - 5) * 0.005;
+    }
+  }
+
+  prob = Math.max(0.02, Math.min(0.98, prob));
+
+  return rng() < prob ? higher : lower;
+}
+
+function parseWinPct(record) {
+  const parts = record.split('-');
+  const w = parseInt(parts[0]);
+  const l = parseInt(parts[1]);
+  return w / (w + l);
+}
+
+// ===== RENDERING =====
+function renderRegionTabs(regionResults, resolvedBracket, firstFourResults) {
+  const tabsEl = document.getElementById('regionTabs');
+  const regionsEl = document.getElementById('bracketRegions');
+  tabsEl.innerHTML = '';
+  regionsEl.innerHTML = '';
+
+  const regionNames = Object.keys(regionResults);
+
+  regionNames.forEach((name, idx) => {
+    // Tab
+    const tab = document.createElement('button');
+    tab.className = 'region-tab' + (idx === 0 ? ' active' : '');
+    tab.textContent = name;
+    tab.onclick = () => switchRegion(name);
+    tabsEl.appendChild(tab);
+
+    // Region content
+    const regionDiv = document.createElement('div');
+    regionDiv.className = 'bracket-region' + (idx === 0 ? ' active' : '');
+    regionDiv.id = 'region-' + name;
+
+    const teams = resolvedBracket[name];
+    const rounds = regionResults[name];
+
+    // Build bracket grid: R64 | R32 | S16 | E8
+    const grid = document.createElement('div');
+    grid.className = 'bracket-grid';
+    grid.style.gridTemplateColumns = `repeat(5, minmax(150px, 1fr))`;
+
+    // Round of 64 (first round)
+    const r64Col = createRoundColumn("First Round", teams, null);
+    grid.appendChild(r64Col);
+
+    // Subsequent rounds
+    for (let r = 0; r < rounds.length; r++) {
+      const roundTeams = rounds[r];
+      const roundLabel = ROUND_NAMES[r + 1] || `Round ${r + 2}`;
+      const prevWinners = rounds[r]; // these are the winners
+      const col = createRoundColumn(roundLabel, roundTeams, roundTeams);
+      grid.appendChild(col);
+    }
+
+    regionDiv.appendChild(grid);
+    regionsEl.appendChild(regionDiv);
+  });
+
+  // Add Final Four tab
+  const ffTab = document.createElement('button');
+  ffTab.className = 'region-tab';
+  ffTab.textContent = 'FINAL FOUR';
+  ffTab.onclick = () => switchRegion('FINAL_FOUR');
+  tabsEl.appendChild(ffTab);
+}
+
+function createRoundColumn(label, teams, winners) {
+  const col = document.createElement('div');
+  col.className = 'round-col';
+
+  const labelEl = document.createElement('div');
+  labelEl.className = 'round-label';
+  labelEl.textContent = label;
+  col.appendChild(labelEl);
+
+  if (label === "First Round") {
+    // Show as matchups of 2
+    for (let i = 0; i < teams.length; i += 2) {
+      const matchup = document.createElement('div');
+      matchup.className = 'matchup';
+      matchup.appendChild(createTeamEl(teams[i], false));
+      matchup.appendChild(createTeamEl(teams[i + 1], false));
+      col.appendChild(matchup);
+    }
+  } else {
+    // Show advancing teams
+    for (let i = 0; i < teams.length; i++) {
+      const matchup = document.createElement('div');
+      matchup.className = 'matchup';
+      matchup.appendChild(createTeamEl(teams[i], true));
+      col.appendChild(matchup);
+    }
+  }
+
+  return col;
+}
+
+function createTeamEl(team, isWinner) {
+  const div = document.createElement('div');
+  div.className = 'team' + (isWinner ? ' winner' : '');
+  const seedSpan = document.createElement('span');
+  seedSpan.className = 'seed';
+  seedSpan.textContent = team.seed;
+  div.appendChild(seedSpan);
+  div.appendChild(document.createTextNode(team.name));
+  return div;
+}
+
+function switchRegion(name) {
+  // Update tabs
+  document.querySelectorAll('.region-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.region-tab').forEach(t => {
+    if ((name === 'FINAL_FOUR' && t.textContent === 'FINAL FOUR') || t.textContent === name) {
+      t.classList.add('active');
+    }
+  });
+
+  // Update regions
+  document.querySelectorAll('.bracket-region').forEach(r => r.classList.remove('active'));
+  const regionEl = document.getElementById('region-' + name);
+  if (regionEl) regionEl.classList.add('active');
+
+  // Final four visibility
+  const ffSection = document.getElementById('finalFourSection');
+  if (name === 'FINAL_FOUR') {
+    ffSection.classList.add('active');
+    document.querySelectorAll('.bracket-region').forEach(r => r.classList.remove('active'));
+  } else {
+    ffSection.classList.remove('active');
+  }
+}
+
+function renderFinalFour(ffResults, champion) {
+  const container = document.getElementById('ffBracket');
+  container.innerHTML = '';
+
+  // Semifinal 1
+  const semi1 = document.createElement('div');
+  semi1.className = 'ff-game';
+  semi1.innerHTML = `
+    <div class="ff-team ${ffResults[0].winner === ffResults[0].team1 ? 'winner' : ''}">
+      <span class="seed">${ffResults[0].team1.seed}</span> ${ffResults[0].team1.name}
+    </div>
+    <div class="ff-team ${ffResults[0].winner === ffResults[0].team2 ? 'winner' : ''}">
+      <span class="seed">${ffResults[0].team2.seed}</span> ${ffResults[0].team2.name}
+    </div>
+  `;
+  container.appendChild(semi1);
+
+  const arrow1 = document.createElement('div');
+  arrow1.className = 'ff-arrow';
+  arrow1.textContent = '\u2192';
+  container.appendChild(arrow1);
+
+  // Championship matchup
+  const champGame = document.createElement('div');
+  champGame.className = 'ff-game';
+  champGame.innerHTML = `
+    <div class="ff-team ${champion === ffResults[0].winner ? 'winner' : ''}">
+      <span class="seed">${ffResults[0].winner.seed}</span> ${ffResults[0].winner.name}
+    </div>
+    <div style="text-align:center;font-size:0.7rem;color:var(--text-muted);padding:0.2rem 0;">CHAMPIONSHIP</div>
+    <div class="ff-team ${champion === ffResults[1].winner ? 'winner' : ''}">
+      <span class="seed">${ffResults[1].winner.seed}</span> ${ffResults[1].winner.name}
+    </div>
+  `;
+  container.appendChild(champGame);
+
+  const arrow2 = document.createElement('div');
+  arrow2.className = 'ff-arrow';
+  arrow2.textContent = '\u2190';
+  container.appendChild(arrow2);
+
+  // Semifinal 2
+  const semi2 = document.createElement('div');
+  semi2.className = 'ff-game';
+  semi2.innerHTML = `
+    <div class="ff-team ${ffResults[1].winner === ffResults[1].team1 ? 'winner' : ''}">
+      <span class="seed">${ffResults[1].team1.seed}</span> ${ffResults[1].team1.name}
+    </div>
+    <div class="ff-team ${ffResults[1].winner === ffResults[1].team2 ? 'winner' : ''}">
+      <span class="seed">${ffResults[1].team2.seed}</span> ${ffResults[1].team2.name}
+    </div>
+  `;
+  container.appendChild(semi2);
+
+  // Champion
+  const champBox = document.getElementById('championBox');
+  champBox.style.display = 'inline-block';
+  document.getElementById('champName').textContent = `${champion.seed} ${champion.name} \uD83C\uDFC6`;
+}
+
+// ===== ACTIONS =====
+function startOver() {
+  document.getElementById('resultsSection').classList.remove('active');
+  document.getElementById('formSection').style.display = 'block';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function copyResults() {
+  if (!window._bracketData) return;
+  const { regionResults, ffResults, champion, firstName, lastName, persona, company } = window._bracketData;
+
+  let text = `\uD83C\uDFC0 ${firstName}'s ${persona.title} Bracket - 2026 March Madness\n`;
+  text += `${company.badge} Professional Match: ${company.name} (${company.tagline})\n`;
+  text += `Powered by Hurrdat Marketing Persona Bracket Generator\n\n`;
+
+  for (const [regionName, rounds] of Object.entries(regionResults)) {
+    text += `--- ${regionName} ---\n`;
+    const regionWinner = rounds[rounds.length - 1][0];
+    text += `Regional Champion: ${regionWinner.seed} ${regionWinner.name}\n`;
+    text += `Sweet 16: ${rounds[1].map(t => t.name).join(', ')}\n`;
+    text += `Elite Eight: ${rounds[2].map(t => t.name).join(', ')}\n\n`;
+  }
+
+  text += `--- FINAL FOUR ---\n`;
+  ffResults.forEach(r => {
+    text += `${r.team1.seed} ${r.team1.name} vs ${r.team2.seed} ${r.team2.name} \u2192 ${r.winner.name}\n`;
+  });
+  text += `\n\uD83C\uDFC6 CHAMPION: ${champion.seed} ${champion.name}\n`;
+  text += `\nhurrdatmarketing.com`;
+
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.querySelector('.action-btn.secondary');
+    const orig = btn.textContent;
+    btn.textContent = '\u2705 Copied!';
+    setTimeout(() => btn.textContent = orig, 2000);
+  });
+}
+</script>
+
+</body>
+</html>
