@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>2026 March Madness Bracket Generator | Hurrdat Marketing</title>
+  <title>2026 NCAA Tournament Bracket Generator | Hurrdat Marketing</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700;800&display=swap" rel="stylesheet" />
@@ -485,7 +485,7 @@
 <header class="hero">
   <img src="https://hurrdatmarketing.com/wp-content/uploads/2025/05/hurrdat-marketing-logo.svg" alt="Hurrdat Marketing" class="hero-logo" />
   <h1><span class="sparkle">&#10024;</span> 2026 Persona Bracket <span class="sparkle">&#10024;</span></h1>
-  <p>Your marketing instincts predict March Madness. No sports knowledge required.</p>
+  <p>Your marketing instincts predict the Big Dance. No sports knowledge required.</p>
 </header>
 
 <!-- FORM -->
@@ -676,7 +676,7 @@
 
   <div class="final-four-section active" id="finalFourSection">
     <div class="final-four-card">
-      <h3>&#127942; Final Four &amp; National Championship</h3>
+      <h3>&#127942; National Semifinals &amp; Championship</h3>
       <div class="ff-bracket" id="ffBracket"></div>
       <div class="champion-box" id="championBox" style="display:none">
         <div class="label">National Champion</div>
@@ -692,7 +692,7 @@
 </section>
 
 <footer class="footer">
-  Built by <a href="https://hurrdatmarketing.com" target="_blank" rel="noopener">Hurrdat Marketing</a> &middot; 2026 March Madness Persona Bracket Generator
+  Built by <a href="https://hurrdatmarketing.com" target="_blank" rel="noopener">Hurrdat Marketing</a> &middot; 2026 NCAA Tournament Persona Bracket Generator
 </footer>
 
 <script>
@@ -1241,7 +1241,7 @@ function renderRegionTabs(regionResults, resolvedBracket, firstFourResults) {
   // Add Final Four tab
   const ffTab = document.createElement('button');
   ffTab.className = 'region-tab';
-  ffTab.textContent = 'FINAL FOUR';
+  ffTab.textContent = 'NATIONAL SEMIS';
   ffTab.onclick = () => switchRegion('FINAL_FOUR');
   tabsEl.appendChild(ffTab);
 }
@@ -1292,7 +1292,7 @@ function switchRegion(name) {
   // Update tabs
   document.querySelectorAll('.region-tab').forEach(t => t.classList.remove('active'));
   document.querySelectorAll('.region-tab').forEach(t => {
-    if ((name === 'FINAL_FOUR' && t.textContent === 'FINAL FOUR') || t.textContent === name) {
+    if ((name === 'FINAL_FOUR' && t.textContent === 'NATIONAL SEMIS') || t.textContent === name) {
       t.classList.add('active');
     }
   });
@@ -1427,7 +1427,7 @@ function downloadPDF() {
   doc.setTextColor(255, 255, 255);
   doc.setFontSize(20);
   doc.setFont('helvetica', 'bold');
-  doc.text('2026 March Madness Bracket', W / 2, y + 22, { align: 'center' });
+  doc.text('2026 NCAA Tournament Bracket', W / 2, y + 22, { align: 'center' });
   doc.setFontSize(11);
   doc.setFont('helvetica', 'normal');
   doc.text('Powered by Hurrdat Marketing Persona Bracket Generator', W / 2, y + 40, { align: 'center' });
@@ -1547,7 +1547,7 @@ function downloadPDF() {
   doc.setTextColor(255, 255, 255);
   doc.setFontSize(13);
   doc.setFont('helvetica', 'bold');
-  doc.text('FINAL FOUR', W / 2, y + 16, { align: 'center' });
+  doc.text('NATIONAL SEMIFINALS', W / 2, y + 16, { align: 'center' });
   y += 36;
 
   ffResults.forEach(r => {
