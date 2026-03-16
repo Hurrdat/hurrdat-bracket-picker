@@ -479,14 +479,18 @@
     <p class="subtitle">Your marketing profile will predict the entire 2026 tournament</p>
 
     <div class="form-grid">
-      <!-- Name -->
+      <!-- Name & Email -->
       <div class="form-group">
-        <label><span class="icon">&#128100;</span> First Name</label>
-        <input type="text" id="firstName" placeholder="Jane" />
+        <label><span class="icon">&#128100;</span> First Name <span style="color:var(--coral)">*</span></label>
+        <input type="text" id="firstName" placeholder="Jane" required />
       </div>
       <div class="form-group">
-        <label><span class="icon">&#128100;</span> Last Name</label>
-        <input type="text" id="lastName" placeholder="Marketer" />
+        <label><span class="icon">&#128100;</span> Last Name <span style="color:var(--coral)">*</span></label>
+        <input type="text" id="lastName" placeholder="Marketer" required />
+      </div>
+      <div class="form-group full-width">
+        <label><span class="icon">&#9993;</span> Email <span style="color:var(--coral)">*</span></label>
+        <input type="email" id="email" placeholder="jane@company.com" required />
       </div>
 
       <!-- Q1: Marketing Superpower -->
@@ -663,6 +667,10 @@
 </footer>
 
 <script>
+// ===== GOOGLE SHEETS INTEGRATION =====
+// Replace with your deployed Google Apps Script web app URL
+const GOOGLE_SHEETS_URL = 'https://script.google.com/macros/s/AKfycbz9lHtThywSMPnFWvw-aDx6vNeBgg91HTJGb_YrSB8rEkUDt3sZkX-O1n8u24pdk9BXbQ/exec';
+
 // ===== BRACKET DATA =====
 const BRACKET = {
   EAST: [
@@ -876,8 +884,21 @@ function seededRandom(seed) {
 
 // ===== BRACKET GENERATION =====
 function generateBracket() {
-  const firstName = document.getElementById('firstName').value.trim() || 'Fan';
-  const lastName = document.getElementById('lastName').value.trim() || '';
+  const firstName = document.getElementById('firstName').value.trim();
+  const lastName = document.getElementById('lastName').value.trim();
+  const email = document.getElementById('email').value.trim();
+
+  // Validate required fields
+  if (!firstName || !lastName || !email) {
+    alert('Please fill in your first name, last name, and email to continue.');
+    return;
+  }
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    alert('Please enter a valid email address.');
+    return;
+  }
+
   const answers = [];
   for (let i = 1; i <= 8; i++) {
     answers.push(parseInt(document.getElementById('q' + i).value));
@@ -898,6 +919,36 @@ function generateBracket() {
   const maxTrack = trackCounts.indexOf(Math.max(...trackCounts));
   const company = COMPANIES[maxTrack];
   const persona = PERSONAS[maxTrack];
+
+  // Fire-and-forget: send data to Google Sheets
+  if (GOOGLE_SHEETS_URL && GOOGLE_SHEETS_URL !== 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE') {
+    // Grab the selected option text for each question
+    const answerText = [];
+    for (let i = 1; i <= 8; i++) {
+      const sel = document.getElementById('q' + i);
+      answerText.push(sel.options[sel.selectedIndex].text);
+    }
+    fetch(GOOGLE_SHEETS_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        timestamp: new Date().toISOString(),
+        firstName,
+        lastName,
+        email,
+        marketingSuperpower: answerText[0],
+        goToKPI: answerText[1],
+        winningContentFormat: answerText[2],
+        platformInvestFirst: answerText[3],
+        clientProblem: answerText[4],
+        howYoudUseAI: answerText[5],
+        biggestBudgetSlice: answerText[6],
+        boldestBelief: answerText[7],
+        persona: persona.title
+      })
+    }).catch(() => {}); // silently ignore errors
+  }
 
   // Compute persona traits with user-specific boldness modifier
   // Odd-indexed options within each dropdown represent the "bolder" choice
