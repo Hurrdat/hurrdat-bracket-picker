@@ -8,6 +8,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700;800&display=swap" rel="stylesheet" />
   <script src="https://unpkg.com/jspdf@2.5.2/dist/jspdf.umd.min.js"></script>
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
   <style>
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -650,6 +651,13 @@
       </div>
     </div>
 
+    <label class="opt-in" style="display:flex;align-items:flex-start;gap:0.5rem;margin-top:1.5rem;font-size:0.82rem;color:#717178;cursor:pointer;">
+      <input type="checkbox" id="optIn" style="margin-top:3px;accent-color:#EC6861;cursor:pointer;" />
+      <span>I agree to receive marketing communications from Hurrdat. You can unsubscribe at any time.</span>
+    </label>
+
+    <div class="cf-turnstile" data-sitekey="0x4AAAAAACr0e3GnUXCQWb8P" data-theme="light" style="display:flex;justify-content:center;margin-top:1.5rem;"></div>
+
     <button class="generate-btn" onclick="generateBracket()">Generate My Bracket</button>
   </div>
 </section>
@@ -958,6 +966,15 @@ function generateBracket() {
     return;
   }
 
+  const optIn = document.getElementById('optIn').checked;
+
+  // Verify Turnstile
+  const turnstileToken = document.querySelector('[name="cf-turnstile-response"]')?.value;
+  if (!turnstileToken) {
+    alert('Please complete the verification check.');
+    return;
+  }
+
   const answers = [];
   for (let i = 1; i <= 8; i++) {
     answers.push(parseInt(document.getElementById('q' + i).value));
@@ -1006,7 +1023,9 @@ function generateBracket() {
         howYoudUseAI: answerText[5],
         biggestBudgetSlice: answerText[6],
         boldestBelief: answerText[7],
-        persona: persona.title
+        persona: persona.title,
+        optIn: optIn,
+        cfToken: turnstileToken
       })
     }).catch(() => {}); // silently ignore errors
   }
