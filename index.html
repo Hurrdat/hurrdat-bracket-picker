@@ -7,6 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700;800&display=swap" rel="stylesheet" />
+  <script src="https://unpkg.com/jspdf@2.5.2/dist/jspdf.umd.min.js"></script>
   <style>
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -417,6 +418,21 @@
       line-height: 1.45;
     }
 
+    /* --- CTA LINK --- */
+    .company-cta {
+      display: inline-block;
+      margin-top: 0.75rem;
+      padding: 0.5rem 1.2rem;
+      background: var(--gradient);
+      color: #fff;
+      text-decoration: none;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+    .company-cta:hover { opacity: 0.88; transform: translateY(-1px); }
+
     /* --- SHARE / ACTIONS --- */
     .actions-row {
       display: flex;
@@ -505,6 +521,8 @@
           <option value="2">Crisis Communications</option>
           <option value="3">Billboard &amp; Print Campaigns</option>
           <option value="3">Local Market Domination</option>
+          <option value="4">Full-Funnel Strategy &amp; Integration</option>
+          <option value="4">Customer Acquisition Architecture</option>
         </select>
       </div>
 
@@ -520,6 +538,8 @@
           <option value="2">Brand Sentiment &amp; Trust Score</option>
           <option value="3">Impressions &amp; Local Reach</option>
           <option value="3">Foot Traffic &amp; In-Store Visits</option>
+          <option value="4">Customer Lifetime Value &amp; ROI</option>
+          <option value="4">Pipeline Velocity &amp; Attribution</option>
         </select>
       </div>
 
@@ -535,6 +555,8 @@
           <option value="2">Executive Thought Leadership</option>
           <option value="3">Out-of-Home &amp; Print Creative</option>
           <option value="3">Direct Mail &amp; Experiential</option>
+          <option value="4">Integrated Campaigns Across Channels</option>
+          <option value="4">Strategic Playbooks &amp; Roadmaps</option>
         </select>
       </div>
 
@@ -550,6 +572,8 @@
           <option value="2">LinkedIn &amp; Industry Publications</option>
           <option value="3">Billboards, Transit &amp; Radio</option>
           <option value="3">Event Sponsorships &amp; Signage</option>
+          <option value="4">Wherever the Data Says Customers Are</option>
+          <option value="4">The Right Mix — It Depends on the Client</option>
         </select>
       </div>
 
@@ -565,6 +589,8 @@
           <option value="2">"We need to manage a crisis"</option>
           <option value="3">"We need to own our local market"</option>
           <option value="3">"Our competitors are more visible"</option>
+          <option value="4">"We need more customers — period"</option>
+          <option value="4">"We're spending but don't know what's working"</option>
         </select>
       </div>
 
@@ -580,6 +606,8 @@
           <option value="2">Journalist targeting &amp; outreach</option>
           <option value="3">Data-driven media buying &amp; placement</option>
           <option value="3">Audience location intelligence</option>
+          <option value="4">Cross-channel attribution &amp; forecasting</option>
+          <option value="4">Competitive gap analysis &amp; opportunity scoring</option>
         </select>
       </div>
 
@@ -595,6 +623,8 @@
           <option value="2">Reputation Management</option>
           <option value="3">OOH, Print &amp; Traditional Media</option>
           <option value="3">Radio, TV &amp; Sponsorships</option>
+          <option value="4">Wherever the Highest-Confidence ROI Is</option>
+          <option value="4">The Channel Mix That Solves the Problem</option>
         </select>
       </div>
 
@@ -610,6 +640,8 @@
           <option value="2">Reputation is a company's most valuable asset</option>
           <option value="3">Nothing beats real-world brand presence</option>
           <option value="3">Digital is oversaturated &mdash; go physical</option>
+          <option value="4">The best strategy uses every tool at the right time</option>
+          <option value="4">Most companies don't have a marketing problem &mdash; they have a strategy problem</option>
         </select>
       </div>
     </div>
@@ -638,6 +670,7 @@
       <div class="company-match-label">Your Professional Match</div>
       <div class="company-match-name" id="companyName"></div>
       <p class="company-match-desc" id="companyDesc"></p>
+      <a id="companyCta" href="https://hurrdat.com" target="_blank" rel="noopener" class="company-cta">Explore what Hurrdat can do for you &rarr;</a>
     </div>
   </div>
 
@@ -658,7 +691,7 @@
 
   <div class="actions-row">
     <button class="action-btn primary" onclick="startOver()">&#x21bb; Start Over</button>
-    <button class="action-btn secondary" onclick="copyResults()">&#128203; Copy My Picks</button>
+    <button class="action-btn secondary" onclick="downloadPDF()">&#128196; Download PDF</button>
   </div>
 </section>
 
@@ -806,7 +839,8 @@ const PERSONAS = [
   { title: "The SEO Strategist", track: 0, desc: "You play the long game. Just like organic rankings, your bracket favors consistency, authority, and teams that have built momentum over time. You trust the process and let the data guide you." },
   { title: "The Storyteller", track: 1, desc: "You think in narratives. Your bracket is full of cinematic moments\u2014underdog runs, revenge games, and teams with stories that deserve a documentary. Content is king, and your picks prove it." },
   { title: "The Reputation Builder", track: 2, desc: "You know that perception is reality. Storied programs with strong reputations get an edge in your bracket because you understand that credibility creates its own momentum." },
-  { title: "The Market Dominator", track: 3, desc: "You believe in owning your territory. Your bracket favors teams that dominate their conference and region\u2014because in March, just like in local advertising, presence wins." }
+  { title: "The Market Dominator", track: 3, desc: "You believe in owning your territory. Your bracket favors teams that dominate their conference and region\u2014because in March, just like in local advertising, presence wins." },
+  { title: "The Strategist", track: 4, desc: "You see the 50,000-foot view. Your bracket blends data, narrative, brand equity, and market context\u2014because the best strategy uses every tool at the right time. You find undervalued opportunities, invest with conviction, and let the compounding begin." }
 ];
 
 // ===== ALGORITHM DATA (from hurrdat_bracket_algorithm.xlsx) =====
@@ -852,6 +886,25 @@ const R1_MATCHUPS = {
   "Iowa St.":       { upsetScore: 1, chalkPct: 99, injury: false }
 };
 
+// Strategic Lens Pick Guide — specific first-round overrides for the Strategist persona (track 4)
+// These are high-conviction picks where all strategic signals align
+const STRATEGIC_LENS_PICKS = {
+  // SEO & Organic Growth lens picks
+  "Wisconsin":      { pick: "lower", confidence: 0.62 },  // High Point 30-4 as undervalued long-tail
+  "Vanderbilt":     { pick: "lower", confidence: 0.55 },  // McNeese 28-5, undervalued asset
+  "Texas Tech":     { pick: "lower", confidence: 0.72 },  // Akron 29-5, Toppin injury, highest-confidence data upset
+  "Clemson":        { pick: "lower", confidence: 0.60 },  // Iowa 9 over Clemson 8, KenPom favors Iowa
+  "North Carolina": { pick: "lower", confidence: 0.55 },  // VCU 11 over UNC 6, Wilson injury + perception gap
+  // Paid Media lens — protect chalk investments for ROI
+  "Duke":           { pick: "higher", confidence: 0.99 },  // Lock — protect deep-run investment
+  "Michigan":       { pick: "higher", confidence: 0.99 },  // Lock — ROI principle
+  // Content/Media lens
+  "Illinois":       { pick: "higher", confidence: 0.97 },  // Lock — earned No. 1 offense, distribution gap too large
+  "Houston":        { pick: "higher", confidence: 0.97 },  // Lock — defense built over full season
+  // PR lens
+  "Virginia":       { pick: "higher", confidence: 0.96 },  // Lock — clearest defensive identity
+};
+
 // Composite persona scores averaged from Algorithm Matrix Trait Profiles
 // Track 0: Hurrdat Marketing (Performance Analyst) — data-first, high chalk
 // Track 1: Hurrdat Media (Sports Storyteller) — narrative-driven, high upset
@@ -861,7 +914,9 @@ const PERSONA_TRAITS = [
   { chalk: 7.6, upset: 3.6, data: 9.4, brand: 4.2, narrative: 2.6, regional: 1.2, dominant: "data" },
   { chalk: 4.0, upset: 7.4, data: 4.4, brand: 4.2, narrative: 8.0, regional: 4.2, dominant: "narrative" },
   { chalk: 8.4, upset: 2.6, data: 4.6, brand: 8.8, narrative: 4.4, regional: 1.6, dominant: "brand" },
-  { chalk: 6.6, upset: 4.0, data: 2.4, brand: 7.4, narrative: 5.4, regional: 7.6, dominant: "regional" }
+  { chalk: 6.6, upset: 4.0, data: 2.4, brand: 7.4, narrative: 5.4, regional: 7.6, dominant: "regional" },
+  // Strategic Lens (T21-T40 averaged): data-driven but balanced, willing to act on high-conviction upsets
+  { chalk: 6.4, upset: 5.1, data: 8.3, brand: 4.9, narrative: 4.8, regional: 2.2, dominant: "data" }
 ];
 
 // ===== SEEDED RANDOM =====
@@ -913,11 +968,13 @@ function generateBracket() {
   const seed = hashCode(seedStr);
   const rng = seededRandom(seed);
 
-  // Determine company match by tallying track votes (values 0-3 map to 4 companies)
-  const trackCounts = [0, 0, 0, 0]; // Marketing, Media, PR, OOH
+  // Determine company match by tallying track votes (values 0-4 map to 5 personas)
+  const trackCounts = [0, 0, 0, 0, 0]; // Marketing, Media, PR, OOH, Strategic
   answers.forEach(a => { trackCounts[a]++; });
   const maxTrack = trackCounts.indexOf(Math.max(...trackCounts));
-  const company = COMPANIES[maxTrack];
+  // Track 4 (Strategic Lens) maps to Hurrdat Marketing (company index 0)
+  const companyIndex = maxTrack === 4 ? 0 : maxTrack;
+  const company = COMPANIES[companyIndex];
   const persona = PERSONAS[maxTrack];
 
   // Fire-and-forget: send data to Google Sheets
@@ -962,7 +1019,8 @@ function generateBracket() {
     brand: baseTraits.brand,
     narrative: baseTraits.narrative,
     regional: baseTraits.regional,
-    dominant: baseTraits.dominant
+    dominant: baseTraits.dominant,
+    _isStrategic: maxTrack === 4
   };
 
   // Show loading
@@ -1033,6 +1091,7 @@ function generateBracket() {
     document.getElementById('companyBadge').textContent = company.badge;
     document.getElementById('companyName').textContent = company.name;
     document.getElementById('companyDesc').textContent = `${company.tagline} \u2014 ${company.desc}`;
+    document.getElementById('companyCta').href = 'https://hurrdat.com';
 
     // Region tabs
     renderRegionTabs(regionResults, resolvedBracket, firstFourResults);
@@ -1126,6 +1185,16 @@ function pickWinner(team1, team2, rng, traits, isFirstRound) {
     // HIGH ALERT: Akron/TTU (score 8) — strongest upset signal in bracket
     if (us >= 8 && traits.upset >= 5) {
       prob -= 0.10;
+    }
+
+    // Strategic Lens overrides (track 4): high-conviction picks from the Strategic Pick Guide
+    const slPick = traits._isStrategic ? STRATEGIC_LENS_PICKS[higher.name] : null;
+    if (slPick) {
+      if (slPick.pick === "lower") {
+        prob = 1 - slPick.confidence; // e.g., 0.72 confidence in upset → prob = 0.28 higher seed wins
+      } else {
+        prob = slPick.confidence;
+      }
     }
 
   } else {
@@ -1361,35 +1430,237 @@ function startOver() {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-function copyResults() {
+function downloadPDF() {
   if (!window._bracketData) return;
   const { regionResults, ffResults, champion, firstName, lastName, persona, company } = window._bracketData;
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ orientation: 'portrait', unit: 'pt', format: 'letter' });
 
-  let text = `\uD83C\uDFC0 ${firstName}'s ${persona.title} Bracket - 2026 March Madness\n`;
-  text += `${company.badge} Professional Match: ${company.name} (${company.tagline})\n`;
-  text += `Powered by Hurrdat Marketing Persona Bracket Generator\n\n`;
+  const W = doc.internal.pageSize.getWidth();
+  const H = doc.internal.pageSize.getHeight();
+  const margin = 40;
+  const contentW = W - margin * 2;
+  let y = margin;
 
-  for (const [regionName, rounds] of Object.entries(regionResults)) {
-    text += `--- ${regionName} ---\n`;
-    const regionWinner = rounds[rounds.length - 1][0];
-    text += `Regional Champion: ${regionWinner.seed} ${regionWinner.name}\n`;
-    text += `Sweet 16: ${rounds[1].map(t => t.name).join(', ')}\n`;
-    text += `Elite Eight: ${rounds[2].map(t => t.name).join(', ')}\n\n`;
+  // --- Colors ---
+  const coral = [236, 104, 97];
+  const orange = [244, 121, 51];
+  const dark = [70, 65, 66];
+  const muted = [113, 113, 120];
+  const cardBg = [247, 247, 248];
+
+  // --- Helper: gradient-ish header bar ---
+  function drawHeaderBar(yPos, height) {
+    // Simulate gradient with two overlapping rects
+    doc.setFillColor(...coral);
+    doc.roundedRect(margin, yPos, contentW, height, 6, 6, 'F');
+    doc.setFillColor(...orange);
+    doc.roundedRect(margin + contentW * 0.5, yPos, contentW * 0.5, height, 0, 0, 'F');
+    // Re-round right corners
+    doc.setFillColor(...orange);
+    doc.roundedRect(margin + contentW * 0.6, yPos, contentW * 0.4, height, 6, 6, 'F');
   }
 
-  text += `--- FINAL FOUR ---\n`;
-  ffResults.forEach(r => {
-    text += `${r.team1.seed} ${r.team1.name} vs ${r.team2.seed} ${r.team2.name} \u2192 ${r.winner.name}\n`;
-  });
-  text += `\n\uD83C\uDFC6 CHAMPION: ${champion.seed} ${champion.name}\n`;
-  text += `\nhurrdatmarketing.com`;
+  // Sanitize text for jsPDF (no unicode beyond Latin-1)
+  function sanitize(str) {
+    return str
+      .replace(/\u2014/g, '--')   // em-dash
+      .replace(/\u2013/g, '-')    // en-dash
+      .replace(/\u2192/g, '>>')   // arrow
+      .replace(/\u2018|\u2019/g, "'")  // smart quotes
+      .replace(/\u201C|\u201D/g, '"')  // smart double quotes
+      .replace(/[\uD800-\uDFFF]{2}/g, '')  // emoji surrogate pairs
+      .replace(/[^\x00-\xFF]/g, '');  // strip anything else non-Latin-1
+  }
 
-  navigator.clipboard.writeText(text).then(() => {
-    const btn = document.querySelector('.action-btn.secondary');
-    const orig = btn.textContent;
-    btn.textContent = '\u2705 Copied!';
-    setTimeout(() => btn.textContent = orig, 2000);
+  // --- Title Section ---
+  drawHeaderBar(y, 52);
+  doc.setTextColor(255, 255, 255);
+  doc.setFontSize(20);
+  doc.setFont('helvetica', 'bold');
+  doc.text('2026 March Madness Bracket', W / 2, y + 22, { align: 'center' });
+  doc.setFontSize(11);
+  doc.setFont('helvetica', 'normal');
+  doc.text('Powered by Hurrdat Marketing Persona Bracket Generator', W / 2, y + 40, { align: 'center' });
+  y += 68;
+
+  // --- Persona Card ---
+  const personaLabel = persona.title.replace(/^The\s+/, '');
+  doc.setFontSize(10);
+  const descLines = doc.splitTextToSize(sanitize(persona.desc), contentW - 28);
+  const personaCardH = 30 + descLines.length * 13 + 10;
+  doc.setFillColor(...cardBg);
+  doc.roundedRect(margin, y, contentW, personaCardH, 6, 6, 'F');
+  doc.setTextColor(...dark);
+  doc.setFontSize(16);
+  doc.setFont('helvetica', 'bold');
+  doc.text(`${firstName}'s ${personaLabel} Bracket`, margin + 14, y + 24);
+  doc.setFontSize(10);
+  doc.setFont('helvetica', 'normal');
+  doc.setTextColor(...muted);
+  doc.text(descLines, margin + 14, y + 42);
+  y += personaCardH + 10;
+
+  // --- Company Match Card ---
+  doc.setFontSize(9);
+  const compFullDesc = sanitize(`${company.tagline} -- ${company.desc}`);
+  const compDescLines = doc.splitTextToSize(compFullDesc, contentW - 28);
+  const compCardH = 24 + compDescLines.length * 12 + 14;
+  doc.setFillColor(...cardBg);
+  doc.roundedRect(margin, y, contentW, compCardH, 6, 6, 'F');
+  doc.setTextColor(...dark);
+  doc.setFontSize(12);
+  doc.setFont('helvetica', 'bold');
+  doc.text(sanitize(`YOUR MATCH: ${company.name}`), margin + 14, y + 18);
+  doc.setFontSize(9);
+  doc.setFont('helvetica', 'normal');
+  doc.setTextColor(...muted);
+  doc.text(compDescLines, margin + 14, y + 34);
+  y += compCardH + 16;
+
+  // --- Region Brackets ---
+  const roundNames = ['Round of 32', 'Sweet 16', 'Elite Eight', 'Regional Champ'];
+
+  for (const [regionName, rounds] of Object.entries(regionResults)) {
+    // Check if we need a new page
+    if (y > H - 260) {
+      doc.addPage();
+      y = margin;
+    }
+
+    // Region header
+    doc.setFillColor(...coral);
+    doc.roundedRect(margin, y, contentW, 24, 4, 4, 'F');
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(13);
+    doc.setFont('helvetica', 'bold');
+    doc.text(`${regionName} REGION`, margin + 12, y + 16);
+    y += 34;
+
+    // Each round
+    for (let r = 0; r < rounds.length; r++) {
+      if (y > H - 60) {
+        doc.addPage();
+        y = margin;
+      }
+
+      doc.setTextColor(...muted);
+      doc.setFontSize(8);
+      doc.setFont('helvetica', 'bold');
+      doc.text(roundNames[r].toUpperCase(), margin + 4, y + 10);
+      y += 16;
+
+      const teams = rounds[r];
+      const cols = Math.min(teams.length, 4);
+      const colW = contentW / cols;
+
+      for (let i = 0; i < teams.length; i++) {
+        const col = i % cols;
+        const t = teams[i];
+        const x = margin + col * colW;
+
+        // Team chip
+        doc.setFillColor(255, 255, 255);
+        doc.roundedRect(x + 2, y, colW - 4, 18, 3, 3, 'F');
+        doc.setDrawColor(224, 224, 228);
+        doc.roundedRect(x + 2, y, colW - 4, 18, 3, 3, 'S');
+
+        // Seed badge
+        doc.setFillColor(...coral);
+        doc.roundedRect(x + 5, y + 3, 18, 12, 2, 2, 'F');
+        doc.setTextColor(255, 255, 255);
+        doc.setFontSize(7);
+        doc.setFont('helvetica', 'bold');
+        doc.text(String(t.seed), x + 14, y + 12, { align: 'center' });
+
+        // Team name
+        doc.setTextColor(...dark);
+        doc.setFontSize(8.5);
+        doc.setFont('helvetica', 'normal');
+        doc.text(t.name, x + 27, y + 12);
+
+        if ((i + 1) % cols === 0 || i === teams.length - 1) {
+          y += 22;
+        }
+      }
+      y += 6;
+    }
+    y += 10;
+  }
+
+  // --- Final Four ---
+  if (y > H - 160) {
+    doc.addPage();
+    y = margin;
+  }
+
+  drawHeaderBar(y, 24);
+  doc.setTextColor(255, 255, 255);
+  doc.setFontSize(13);
+  doc.setFont('helvetica', 'bold');
+  doc.text('FINAL FOUR', W / 2, y + 16, { align: 'center' });
+  y += 36;
+
+  ffResults.forEach(r => {
+    doc.setFillColor(255, 255, 255);
+    doc.roundedRect(margin, y, contentW, 22, 4, 4, 'F');
+    doc.setDrawColor(224, 224, 228);
+    doc.roundedRect(margin, y, contentW, 22, 4, 4, 'S');
+
+    doc.setTextColor(...dark);
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'normal');
+    const matchText = `(${r.team1.seed}) ${r.team1.name}  vs  (${r.team2.seed}) ${r.team2.name}`;
+    doc.text(matchText, margin + 12, y + 14);
+
+    // Winner arrow
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(...coral);
+    doc.text(`>> ${r.winner.name}`, W - margin - 12, y + 14, { align: 'right' });
+
+    y += 28;
   });
+
+  y += 10;
+
+  // --- Champion ---
+  if (y > H - 80) {
+    doc.addPage();
+    y = margin;
+  }
+
+  doc.setFillColor(...orange);
+  doc.roundedRect(margin, y, contentW, 44, 6, 6, 'F');
+  doc.setTextColor(255, 255, 255);
+  doc.setFontSize(11);
+  doc.setFont('helvetica', 'normal');
+  doc.text('NATIONAL CHAMPION', W / 2, y + 16, { align: 'center' });
+  doc.setFontSize(18);
+  doc.setFont('helvetica', 'bold');
+  doc.text(`(${champion.seed}) ${champion.name}`, W / 2, y + 36, { align: 'center' });
+  y += 60;
+
+  // --- Footer ---
+  // CTA
+  doc.setTextColor(...coral);
+  doc.setFontSize(10);
+  doc.setFont('helvetica', 'bold');
+  doc.text('Explore what Hurrdat can do for you -- hurrdat.com', W / 2, H - 36, { align: 'center' });
+
+  doc.setTextColor(...muted);
+  doc.setFontSize(8);
+  doc.setFont('helvetica', 'normal');
+  doc.text('hurrdatmarketing.com', W / 2, H - 20, { align: 'center' });
+
+  // Save
+  const safeName = firstName.replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
+  doc.save(`${safeName}-2026-bracket.pdf`);
+
+  // Button feedback
+  const btn = document.querySelector('.action-btn.secondary');
+  const orig = btn.innerHTML;
+  btn.innerHTML = '\u2705 Downloaded!';
+  setTimeout(() => btn.innerHTML = orig, 2000);
 }
 </script>
 
